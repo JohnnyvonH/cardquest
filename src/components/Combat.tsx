@@ -43,7 +43,7 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
     setTimeout(() => setBlockAnimation(false), 400);
   };
 
-  const handleCardClick = (card: CardType, event: React.MouseEvent) => {
+  const handleCardClick = (card: CardType) => {
     // Check if player has enough energy
     if (player.energy < card.cost) {
       return;
@@ -197,7 +197,7 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
             >
               <Enemy
                 enemy={enemy}
-                onClick={(e) => handleEnemyClick(enemy, e)}
+                onClick={(e: React.MouseEvent) => handleEnemyClick(enemy, e)}
                 selected={selectedEnemy?.id === enemy.id}
               />
             </div>
@@ -234,7 +234,7 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
             <div key={`${card.id}-${index}`}>
               <Card
                 card={card}
-                onClick={(e) => handleCardClick(card, e)}
+                onClick={() => handleCardClick(card)}
                 disabled={!isCardPlayable(card)}
                 selected={selectedCard === card}
                 isInHand={true}
