@@ -14,6 +14,8 @@ interface CombatProps {
 const Combat = ({ gameState, setGameState }: CombatProps) => {
   const [selectedCard, setSelectedCard] = useState<CardType | null>(null);
   const [selectedEnemy, setSelectedEnemy] = useState<EnemyType | null>(null);
+  const [attackAnimation, setAttackAnimation] = useState<{ x: number; y: number } | null>(null);
+  const [blockAnimation, setBlockAnimation] = useState(false);
   const { player, enemies } = gameState;
 
   // Check for combat end after any state change
@@ -31,7 +33,17 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
     }
   }, [enemies, player.currentHp, gameState, setGameState]);
 
-  const handleCardClick = (card: CardType) => {
+  const triggerAttackAnimation = (targetX: number, targetY: number) => {
+    setAttackAnimation({ x: targetX, y: targetY });
+    setTimeout(() => setAttackAnimation(null), 500);
+  };
+
+  const triggerBlockAnimation = () => {
+    setBlockAnimation(true);
+    setTimeout(() => setBlockAnimation(false), 400);
+  };
+
+  const handleCardClick = (card: CardType, event: React.MouseEvent) => {
     // Check if player has enough energy
     if (player.energy < card.cost) {
       return;
@@ -43,6 +55,11 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
       // Auto-select first alive enemy if only one exists
       const aliveEnemies = enemies.filter(e => e.currentHp > 0);
       if (aliveEnemies.length === 1) {
+        const enemyElement = document.querySelector(`[data-enemy-id="${aliveEnemies[0].id}"]`);
+        if (enemyElement) {
+          const rect = enemyElement.getBoundingClientRect();
+          triggerAttackAnimation(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        }
         const success = playCard(card, player, aliveEnemies[0], gameState);
         if (success) {
           setSelectedCard(null);
@@ -52,6 +69,9 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
       }
     } else {
       // Play card without target (AOE or non-attack cards)
+      if (card.type === 'defense') {
+        triggerBlockAnimation();
+      }
       const success = playCard(card, player, null, gameState);
       if (success) {
         // Force re-render with new state reference
@@ -60,10 +80,14 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
     }
   };
 
-  const handleEnemyClick = (enemy: EnemyType) => {
+  const handleEnemyClick = (enemy: EnemyType, event: React.MouseEvent) => {
     if (enemy.currentHp <= 0) return;
 
     if (selectedCard) {
+      // Trigger attack animation at enemy position
+      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+      triggerAttackAnimation(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
       // Play the selected card on this enemy
       const success = playCard(selectedCard, player, enemy, gameState);
       if (success) {
@@ -92,6 +116,33 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
 
   return (
     <div className="min-h-screen p-4 flex flex-col">
+      {/* Attack Animation Overlay */}
+      {attackAnimation && (
+        <div className="impact-overlay">
+          <div
+            className="slash-effect"
+            style={{
+              left: attackAnimation.x - 50,
+              top: attackAnimation.y - 50,
+            }}
+          />
+        </div>
+      )}
+
+      {/* Block Animation Overlay */}
+      {blockAnimation && (
+        <div className="impact-overlay">
+          <div
+            className="shield-effect animate-shield-pop"
+            style={{
+              left: '50%',
+              top: '20%',
+              transform: 'translate(-50%, -50%)',
+            }}
+          />
+        </div>
+      )}
+
       {/* Top Bar - Player Stats */}
       <div className="glass-effect rounded-lg p-4 mb-4">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
@@ -114,7 +165,7 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
 
           {/* Block */}
           {player.block > 0 && (
-            <div className="flex items-center gap-2">
+            <div className={`flex items-center gap-2 ${blockAnimation ? 'animate-shield-pop' : ''}`}>
               <Shield className="w-6 h-6 text-blue-400" />
               <span className="font-bold text-xl">{player.block}</span>
             </div>
@@ -122,8 +173,8 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
 
           {/* Energy */}
           <div className="flex items-center gap-2">
-            <Zap className="w-6 h-6 text-cyan-400" />
-            <span className="font-bold text-2xl">{player.energy}</span>
+            <Zap className="w-6 h-6 text-cyan-400 energy-glow" />
+            <span className="font-bold text-2xl energy-glow">{player.energy}</span>
             <span className="text-gray-400">/ {player.maxEnergy}</span>
           </div>
 
@@ -139,12 +190,17 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
       <div className="flex-1 flex items-center justify-center mb-4">
         <div className="flex gap-6 flex-wrap justify-center">
           {enemies.map((enemy) => (
-            <Enemy
+            <div
               key={enemy.id}
-              enemy={enemy}
-              onClick={() => handleEnemyClick(enemy)}
-              selected={selectedEnemy?.id === enemy.id}
-            />
+              data-enemy-id={enemy.id}
+              className={enemy.currentHp <= 0 ? '' : attackAnimation ? 'animate-hit' : ''}
+            >
+              <Enemy
+                enemy={enemy}
+                onClick={(e) => handleEnemyClick(enemy, e)}
+                selected={selectedEnemy?.id === enemy.id}
+              />
+            </div>
           ))}
         </div>
       </div>
@@ -175,14 +231,15 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
         {/* Cards */}
         <div className="flex gap-3 overflow-x-auto pb-2 justify-center flex-wrap">
           {player.hand.map((card, index) => (
-            <Card
-              key={`${card.id}-${index}`}
-              card={card}
-              onClick={() => handleCardClick(card)}
-              disabled={!isCardPlayable(card)}
-              selected={selectedCard === card}
-              isInHand={true}
-            />
+            <div key={`${card.id}-${index}`}>
+              <Card
+                card={card}
+                onClick={(e) => handleCardClick(card, e)}
+                disabled={!isCardPlayable(card)}
+                selected={selectedCard === card}
+                isInHand={true}
+              />
+            </div>
           ))}
         </div>
 

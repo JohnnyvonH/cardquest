@@ -3,7 +3,7 @@ import { Sword, Shield, Skull } from 'lucide-react';
 
 interface EnemyProps {
   enemy: EnemyType;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent) => void;
   selected?: boolean;
 }
 

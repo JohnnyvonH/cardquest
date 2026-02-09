@@ -47,6 +47,37 @@
     @apply active:scale-95;
   }
 
+  /* Card base styling */
+  .card-base {
+    @apply relative rounded-lg border-2 shadow-xl;
+    @apply transition-all duration-200;
+    @apply backdrop-blur-sm;
+  }
+
+  /* Attack cards - Red/Orange */
+  .card-attack {
+    @apply bg-gradient-to-br from-red-900/90 to-orange-900/80;
+    @apply border-red-500/50;
+    @apply shadow-glow-red;
+    @apply hover:border-red-400;
+  }
+
+  /* Defense cards - Blue */
+  .card-defense {
+    @apply bg-gradient-to-br from-blue-900/90 to-cyan-900/80;
+    @apply border-blue-500/50;
+    @apply shadow-lg shadow-blue-900/50;
+    @apply hover:border-blue-400;
+  }
+
+  /* Skill cards - Green/Emerald */
+  .card-skill {
+    @apply bg-gradient-to-br from-emerald-900/90 to-green-900/80;
+    @apply border-emerald-500/50;
+    @apply shadow-lg shadow-emerald-900/50;
+    @apply hover:border-emerald-400;
+  }
+
   /* Health bar - blood red */
   .health-bar {
     @apply bg-gradient-to-r from-red-700 via-red-600 to-red-500;
@@ -85,6 +116,92 @@
     }
     50% {
       transform: translateY(-10px);
+    }
+  }
+
+  /* Attack animation */
+  .animate-attack {
+    animation: attackSlash 0.5s ease-out;
+  }
+
+  @keyframes attackSlash {
+    0% {
+      transform: translateX(-20px) rotate(-10deg);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(20px) rotate(10deg);
+      opacity: 0;
+    }
+  }
+
+  /* Block animation */
+  .animate-block {
+    animation: blockShield 0.4s ease-out;
+  }
+
+  @keyframes blockShield {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.3);
+      opacity: 1;
+    }
+  }
+
+  /* Damage number animation */
+  .animate-damage {
+    animation: damageFloat 1s ease-out forwards;
+  }
+
+  @keyframes damageFloat {
+    0% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-50px) scale(1.5);
+      opacity: 0;
+    }
+  }
+
+  /* Hit flash animation */
+  .animate-hit {
+    animation: hitFlash 0.3s ease-out;
+  }
+
+  @keyframes hitFlash {
+    0%, 100% {
+      filter: brightness(1);
+    }
+    50% {
+      filter: brightness(1.8);
+      box-shadow: 0 0 30px rgba(239, 68, 68, 0.8);
+    }
+  }
+
+  /* Shield pop animation */
+  .animate-shield-pop {
+    animation: shieldPop 0.4s ease-out;
+  }
+
+  @keyframes shieldPop {
+    0% {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
     }
   }
 
@@ -146,20 +263,49 @@
   }
 }
 
-/* Particle background effect */
-@keyframes particleFloat {
-  0%, 100% {
-    transform: translateY(0) translateX(0);
+/* Impact effect overlay */
+.impact-overlay {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.slash-effect {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(45deg, transparent, rgba(239, 68, 68, 0.6), transparent);
+  filter: blur(10px);
+  animation: slashSwipe 0.5s ease-out forwards;
+}
+
+@keyframes slashSwipe {
+  from {
+    transform: translateX(-100px) rotate(-45deg) scaleX(0.5);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100px) rotate(-45deg) scaleX(1.5);
     opacity: 0;
   }
-  10% {
+}
+
+.shield-effect {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border: 4px solid rgba(59, 130, 246, 0.8);
+  border-radius: 50%;
+  animation: shieldExpand 0.5s ease-out forwards;
+}
+
+@keyframes shieldExpand {
+  from {
+    transform: scale(0.5);
     opacity: 1;
   }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-100vh) translateX(50px);
+  to {
+    transform: scale(1.5);
     opacity: 0;
   }
 }
