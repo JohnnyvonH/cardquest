@@ -32,7 +32,7 @@ export function playCard(
   // Apply any additional effects
   if (card.effects) {
     card.effects.forEach(effect => {
-      applyCardEffect(effect, player, target, gameState);
+      applyCardEffect(effect, player, target);
     });
   }
   
@@ -130,8 +130,7 @@ function applySkillCard(card: Card, player: Player, gameState: GameState): void 
 function applyCardEffect(
   effect: any,
   player: Player,
-  target: Enemy | null,
-  gameState: GameState
+  target: Enemy | null
 ): void {
   switch (effect.type) {
     case 'vulnerable':

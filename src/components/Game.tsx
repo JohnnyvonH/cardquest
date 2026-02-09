@@ -7,7 +7,6 @@ import { initializeCombat, isCombatOver } from '../utils/combat';
 import Combat from './Combat';
 import Map from './Map';
 import Victory from './Victory';
-import CardReward from './CardReward';
 import RestSite from './RestSite';
 import Defeat from './Defeat';
 
@@ -48,7 +47,7 @@ const Game = () => {
 
   const startCombat = (enemies: Enemy[]) => {
     initializeCombat(gameState.player);
-    enemies.forEach((enemy, idx) => determineEnemyIntent(enemy, 0));
+    enemies.forEach((enemy) => determineEnemyIntent(enemy, 0));
     setGameState(prev => ({
       ...prev,
       screen: 'combat',
@@ -179,6 +178,7 @@ const Game = () => {
         setGameState(prev => ({ ...prev, screen: 'defeat' }));
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState.player.currentHp, gameState.enemies]);
 
   return (

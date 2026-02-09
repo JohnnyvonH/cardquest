@@ -1,6 +1,6 @@
-import { MapNode, CombatReward, Card } from '../types/game';
+import { MapNode, CombatReward } from '../types/game';
 import { getRandomCards } from '../data/cards';
-import { getRandomRelic, getRandomRelicByRarity } from '../data/relics';
+import { getRandomRelicByRarity } from '../data/relics';
 
 // Generate a floor map
 export function generateFloorMap(floor: number): MapNode[][] {

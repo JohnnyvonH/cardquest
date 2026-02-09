@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { GameState, Enemy as EnemyType, Card as CardType } from '../types/game';
-import { playCard, canPlayCard, cardNeedsTarget } from '../utils/cardEffects';
+import { playCard, cardNeedsTarget } from '../utils/cardEffects';
 import { endTurn, isCombatOver } from '../utils/combat';
 import Card from './Card';
 import Enemy from './Enemy';
@@ -29,7 +29,7 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
         setGameState(prev => ({ ...prev, screen: 'defeat' }));
       }, 500);
     }
-  }, [enemies, player.currentHp]);
+  }, [enemies, player.currentHp, gameState, setGameState]);
 
   const handleCardClick = (card: CardType) => {
     // Check if player has enough energy

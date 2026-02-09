@@ -1,6 +1,6 @@
 import { GameState, MapNode as MapNodeType } from '../types/game';
 import { getAvailablePaths, findCurrentNode } from '../utils/generator';
-import { Sword, Shield, Flame, Gift, Tent, Crown, Heart, Coins } from 'lucide-react';
+import { Sword, Flame, Gift, Tent, Crown, Heart, Coins } from 'lucide-react';
 
 interface MapProps {
   gameState: GameState;
