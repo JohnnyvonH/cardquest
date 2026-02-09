@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { GameState, Enemy as EnemyType, Card as CardType } from '../types/game';
 import { playCard, canPlayCard, cardNeedsTarget } from '../utils/cardEffects';
-import { endTurn } from '../utils/combat';
+import { endTurn, isCombatOver } from '../utils/combat';
 import Card from './Card';
 import Enemy from './Enemy';
 import { Heart, Shield, Zap } from 'lucide-react';
@@ -15,6 +15,21 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
   const [selectedCard, setSelectedCard] = useState<CardType | null>(null);
   const [selectedEnemy, setSelectedEnemy] = useState<EnemyType | null>(null);
   const { player, enemies } = gameState;
+
+  // Check for combat end after any state change
+  useEffect(() => {
+    const result = isCombatOver(gameState);
+    if (result === 'victory') {
+      // Small delay to let the player see the killing blow
+      setTimeout(() => {
+        setGameState(prev => ({ ...prev, screen: 'victory' }));
+      }, 500);
+    } else if (result === 'defeat') {
+      setTimeout(() => {
+        setGameState(prev => ({ ...prev, screen: 'defeat' }));
+      }, 500);
+    }
+  }, [enemies, player.currentHp]);
 
   const handleCardClick = (card: CardType) => {
     // Check if player has enough energy
@@ -31,14 +46,16 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
         const success = playCard(card, player, aliveEnemies[0], gameState);
         if (success) {
           setSelectedCard(null);
-          setGameState({ ...gameState });
+          // Force re-render with new state reference
+          setGameState({ ...gameState, enemies: [...gameState.enemies] });
         }
       }
     } else {
       // Play card without target (AOE or non-attack cards)
       const success = playCard(card, player, null, gameState);
       if (success) {
-        setGameState({ ...gameState });
+        // Force re-render with new state reference
+        setGameState({ ...gameState, enemies: [...gameState.enemies] });
       }
     }
   };
@@ -52,7 +69,8 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
       if (success) {
         setSelectedCard(null);
         setSelectedEnemy(null);
-        setGameState({ ...gameState });
+        // Force re-render with new state reference
+        setGameState({ ...gameState, enemies: [...gameState.enemies] });
       }
     } else {
       // Just highlight the enemy
@@ -64,7 +82,8 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
     endTurn(gameState);
     setSelectedCard(null);
     setSelectedEnemy(null);
-    setGameState({ ...gameState });
+    // Force re-render with new state reference
+    setGameState({ ...gameState, enemies: [...gameState.enemies] });
   };
 
   const isCardPlayable = (card: CardType) => {
