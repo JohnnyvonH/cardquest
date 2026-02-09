@@ -5,11 +5,15 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC?logo=tailwind-css)
 
-## 🎮 Overview
+## 🎮 Play Now
+
+**Live Demo:** [https://johnnyvonh.github.io/cardquest/](https://johnnyvonh.github.io/cardquest/)
+
+## ✨ Overview
 
 Card Quest is a modern, web-based card roguelike game where strategic deck-building meets procedurally generated adventures. Battle through multiple floors, collect powerful cards, upgrade your deck, and face increasingly challenging enemies.
 
-## ✨ Features
+## 🎯 Features
 
 ### Core Gameplay
 - **Strategic Card Combat**: Energy-based card system with Attack, Defense, and Skill cards
@@ -58,16 +62,23 @@ The game will be available at `http://localhost:5173`
 
 ## 📦 Build & Deploy
 
+### Local Build
 ```bash
 # Build for production
 npm run build
 
 # Preview production build
 npm run preview
-
-# Deploy to GitHub Pages
-npm run deploy
 ```
+
+### Deploy to GitHub Pages
+
+The project is configured with automatic deployment to GitHub Pages:
+
+1. **Automatic Deployment**: Every push to `main` branch triggers deployment
+2. **Manual Deployment**: Go to Actions tab → Deploy to GitHub Pages → Run workflow
+
+The site will be live at: `https://johnnyvonh.github.io/cardquest/`
 
 ## 🎯 Game Guide
 
@@ -122,6 +133,9 @@ cardquest/
 │   ├── App.tsx           # Root component
 │   ├── main.tsx          # Entry point
 │   └── index.css         # Global styles
+├── .github/
+│   └── workflows/
+│       └── deploy.yml    # GitHub Pages deployment
 ├── public/               # Static assets
 ├── index.html           # HTML template
 ├── package.json         # Dependencies
@@ -159,7 +173,7 @@ cardquest/
 - **Language**: TypeScript for type safety
 - **Styling**: Tailwind CSS for utility-first styling
 - **Build Tool**: Vite for fast development
-- **Deployment**: GitHub Pages ready
+- **Deployment**: GitHub Pages with Actions
 
 ### Code Standards
 - Functional components with hooks
@@ -229,5 +243,7 @@ For questions, suggestions, or bug reports, please open an issue on GitHub.
 ---
 
 **Built with ❤️ by Johnny von Holstein**
+
+**Live Game:** [https://johnnyvonh.github.io/cardquest/](https://johnnyvonh.github.io/cardquest/)
 
 Enjoy your adventure through Card Quest! 🎴⚔️
