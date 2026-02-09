@@ -1,68 +1,35 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
-    './index.html',
-    './src/**/*.{js,ts,jsx,tsx}',
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+        dungeon: {
+          stone: '#2d2a3e',
+          dark: '#1a1625',
+          purple: '#433d5c',
+          gold: '#fbbf24',
+          blood: '#dc2626',
         },
-        danger: {
-          50: '#fef2f2',
-          100: '#fee2e2',
-          200: '#fecaca',
-          300: '#fca5a5',
-          400: '#f87171',
-          500: '#ef4444',
-          600: '#dc2626',
-          700: '#b91c1c',
-          800: '#991b1b',
-          900: '#7f1d1d',
-        },
-        success: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
-        },
+      },
+      backgroundImage: {
+        'dungeon-gradient': 'linear-gradient(135deg, #1a1625 0%, #2d2a3e 50%, #1a1625 100%)',
+        'card-rare': 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
+        'card-uncommon': 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+        'card-common': 'linear-gradient(135deg, #6b7280 0%, #4b5563 100%)',
+      },
+      boxShadow: {
+        'glow-purple': '0 0 20px rgba(139, 92, 246, 0.5)',
+        'glow-gold': '0 0 20px rgba(251, 191, 36, 0.5)',
+        'glow-red': '0 0 20px rgba(220, 38, 38, 0.5)',
+        'dungeon': '0 10px 40px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
       },
       animation: {
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'float': 'float 3s ease-in-out infinite',
-        'glow': 'glow 2s ease-in-out infinite',
-        'shake': 'shake 0.5s ease-in-out',
-      },
-      keyframes: {
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
-        },
-        glow: {
-          '0%, 100%': { boxShadow: '0 0 5px rgba(59, 130, 246, 0.5)' },
-          '50%': { boxShadow: '0 0 20px rgba(59, 130, 246, 0.8)' },
-        },
-        shake: {
-          '0%, 100%': { transform: 'translateX(0)' },
-          '25%': { transform: 'translateX(-10px)' },
-          '75%': { transform: 'translateX(10px)' },
-        },
       },
     },
   },
