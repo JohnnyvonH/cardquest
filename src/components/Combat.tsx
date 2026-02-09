@@ -17,14 +17,25 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
   const { player, enemies } = gameState;
 
   const handleCardClick = (card: CardType) => {
-    if (!canPlayCard(card, player, cardNeedsTarget(card), selectedEnemy !== null)) {
+    // Check if player has enough energy
+    if (player.energy < card.cost) {
       return;
     }
 
+    // If card needs a target, select it and wait for enemy click
     if (cardNeedsTarget(card)) {
       setSelectedCard(card);
+      // Auto-select first alive enemy if only one exists
+      const aliveEnemies = enemies.filter(e => e.currentHp > 0);
+      if (aliveEnemies.length === 1) {
+        const success = playCard(card, player, aliveEnemies[0], gameState);
+        if (success) {
+          setSelectedCard(null);
+          setGameState({ ...gameState });
+        }
+      }
     } else {
-      // Play card without target
+      // Play card without target (AOE or non-attack cards)
       const success = playCard(card, player, null, gameState);
       if (success) {
         setGameState({ ...gameState });
@@ -36,6 +47,7 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
     if (enemy.currentHp <= 0) return;
 
     if (selectedCard) {
+      // Play the selected card on this enemy
       const success = playCard(selectedCard, player, enemy, gameState);
       if (success) {
         setSelectedCard(null);
@@ -43,6 +55,7 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
         setGameState({ ...gameState });
       }
     } else {
+      // Just highlight the enemy
       setSelectedEnemy(enemy);
     }
   };
@@ -52,6 +65,10 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
     setSelectedCard(null);
     setSelectedEnemy(null);
     setGameState({ ...gameState });
+  };
+
+  const isCardPlayable = (card: CardType) => {
+    return player.energy >= card.cost;
   };
 
   return (
@@ -143,7 +160,7 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
               key={`${card.id}-${index}`}
               card={card}
               onClick={() => handleCardClick(card)}
-              disabled={!canPlayCard(card, player, cardNeedsTarget(card), selectedEnemy !== null)}
+              disabled={!isCardPlayable(card)}
               selected={selectedCard === card}
               isInHand={true}
             />
@@ -152,21 +169,29 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
 
         {player.hand.length === 0 && (
           <div className="text-center text-gray-400 py-8">
-            No cards in hand
+            No cards in hand - Click "End Turn" to draw more cards
           </div>
         )}
       </div>
 
       {/* Instructions */}
-      {selectedCard && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 glass-effect rounded-lg p-6 border-2 border-yellow-400 animate-pulse-glow">
-          <p className="text-lg font-bold">Select an enemy target</p>
+      {selectedCard && cardNeedsTarget(selectedCard) && (
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 glass-effect rounded-lg p-6 border-2 border-yellow-400 animate-pulse-glow z-50">
+          <p className="text-lg font-bold mb-2">💡 Select an Enemy Target</p>
+          <p className="text-sm text-gray-300 mb-4">Click on an enemy to attack</p>
           <button
             onClick={() => setSelectedCard(null)}
-            className="btn-secondary mt-4"
+            className="btn-secondary w-full"
           >
             Cancel
           </button>
+        </div>
+      )}
+
+      {/* Help Text */}
+      {!selectedCard && player.hand.length > 0 && (
+        <div className="text-center text-gray-400 text-sm mt-2">
+          💡 Click a card to play it, then click an enemy to attack
         </div>
       )}
     </div>
