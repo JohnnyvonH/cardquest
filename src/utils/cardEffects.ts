@@ -25,7 +25,7 @@ export function playCard(
       applyDefenseCard(card, player);
       break;
     case 'skill':
-      applySkillCard(card, player, gameState);
+      applySkillCard(card, player);
       break;
   }
   
@@ -108,7 +108,7 @@ function applyDefenseCard(card: Card, player: Player): void {
 }
 
 // Apply skill card effects
-function applySkillCard(card: Card, player: Player, gameState: GameState): void {
+function applySkillCard(card: Card, player: Player): void {
   // Draw cards
   if (card.draw) {
     drawCards(player, card.draw);
