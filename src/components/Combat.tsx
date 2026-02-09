@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { GameState, Enemy as EnemyType, Card as CardType } from '../types/game';
 import { playCard, cardNeedsTarget } from '../utils/cardEffects';
 import { endTurn, isCombatOver } from '../utils/combat';
+import { playAttackSound, playBlockSound, playDamageSound, enableAudio } from '../utils/sounds';
 import Card from './Card';
 import Enemy from './Enemy';
 import { Heart, Shield, Zap } from 'lucide-react';
@@ -17,6 +18,11 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
   const [attackAnimation, setAttackAnimation] = useState<{ x: number; y: number } | null>(null);
   const [blockAnimation, setBlockAnimation] = useState(false);
   const { player, enemies } = gameState;
+
+  // Enable audio on component mount
+  useEffect(() => {
+    enableAudio();
+  }, []);
 
   // Check for combat end after any state change
   useEffect(() => {
@@ -35,15 +41,23 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
 
   const triggerAttackAnimation = (targetX: number, targetY: number) => {
     setAttackAnimation({ x: targetX, y: targetY });
+    playAttackSound();
+    setTimeout(() => {
+      playDamageSound();
+    }, 100);
     setTimeout(() => setAttackAnimation(null), 500);
   };
 
   const triggerBlockAnimation = () => {
     setBlockAnimation(true);
+    playBlockSound();
     setTimeout(() => setBlockAnimation(false), 400);
   };
 
   const handleCardClick = (card: CardType) => {
+    // Enable audio on first interaction
+    enableAudio();
+    
     // Check if player has enough energy
     if (player.energy < card.cost) {
       return;
@@ -71,6 +85,10 @@ const Combat = ({ gameState, setGameState }: CombatProps) => {
       // Play card without target (AOE or non-attack cards)
       if (card.type === 'defense') {
         triggerBlockAnimation();
+      } else if (card.type === 'attack') {
+        // AOE attack
+        playAttackSound();
+        setTimeout(() => playDamageSound(), 100);
       }
       const success = playCard(card, player, null, gameState);
       if (success) {

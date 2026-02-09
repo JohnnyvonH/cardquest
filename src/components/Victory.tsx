@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CombatReward, Card as CardType } from '../types/game';
+import { playVictorySound } from '../utils/sounds';
 import Card from './Card';
 import { Trophy, Coins, Sparkles } from 'lucide-react';
 
@@ -10,6 +11,11 @@ interface VictoryProps {
 
 const Victory = ({ rewards, onContinue }: VictoryProps) => {
   const [selectedCards, setSelectedCards] = useState<CardType[]>([]);
+
+  // Play victory sound on mount
+  useEffect(() => {
+    playVictorySound();
+  }, []);
 
   const cardReward = rewards.find(r => r.type === 'card');
   const goldReward = rewards.find(r => r.type === 'gold');

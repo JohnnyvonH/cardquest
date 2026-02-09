@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { playDefeatSound } from '../utils/sounds';
 import { Skull } from 'lucide-react';
 
 interface DefeatProps {
@@ -6,6 +8,11 @@ interface DefeatProps {
 }
 
 const Defeat = ({ floor, onRestart }: DefeatProps) => {
+  // Play defeat sound on mount
+  useEffect(() => {
+    playDefeatSound();
+  }, []);
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="text-center max-w-2xl">
